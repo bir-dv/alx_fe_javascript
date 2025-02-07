@@ -9,17 +9,18 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
 // Simulate periodic fetching from the server
 setInterval(fetchQuotesFromServer, 5000); // Every 5 seconds simulate server fetching
 
-function fetchQuotesFromServer() {
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            const serverQuotes = data.map(quote => ({
-                text: quote.title,  // Using 'title' as quote text for simplicity
-                category: quote.body // Using 'body' as category for simplicity
-            }));
-            syncData(serverQuotes);
-        })
-        .catch(error => console.error("Error fetching server data:", error));
+async function fetchQuotesFromServer() {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const serverQuotes = data.map(quote => ({
+            text: quote.title,  // Using 'title' as quote text for simplicity
+            category: quote.body // Using 'body' as category for simplicity
+        }));
+        syncData(serverQuotes);
+    } catch (error) {
+        console.error("Error fetching server data:", error);
+    }
 }
 
 function syncData(serverQuotes) {
