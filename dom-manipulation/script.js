@@ -8,20 +8,35 @@ function showRandomQuote() {
     const quoteDisplay = document.getElementById("quoteDisplay");
     if (!quoteDisplay) return;
     
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    const quote = quotes[randomIndex];
+    const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+    const quote = filteredQuotes[randomIndex];
     
-    quoteDisplay.innerHTML = `<p><strong>Category:</strong> ${quote.category}</p><p>${quote.text}</p>`;
+    // Using textContent instead of innerHTML
+    const categoryElement = document.createElement('p');
+    categoryElement.textContent = `Category: ${quote.category}`;
+    const textElement = document.createElement('p');
+    textElement.textContent = quote.text;
+    
+    // Clear the previous content before adding new content
+    quoteDisplay.textContent = '';
+    quoteDisplay.appendChild(categoryElement);
+    quoteDisplay.appendChild(textElement);
+    
     sessionStorage.setItem("lastQuote", JSON.stringify(quote));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     showRandomQuote();
-    document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+    
+    // Event listeners for interaction
+    document.getElementById("newQuote").addEventListener("click", () => showRandomQuote());
+    document.getElementById("categoryFilter").addEventListener("change", filterQuotes);
     createAddQuoteForm();
 });
 
-function addQuote() {
+function addQuote(event) {
+    event.preventDefault(); // Prevent form submission reload
+    
     const text = document.getElementById("newQuoteText").value.trim();
     const category = document.getElementById("newQuoteCategory").value.trim();
     
@@ -39,13 +54,39 @@ function addQuote() {
 function createAddQuoteForm() {
     const formContainer = document.createElement("div");
     formContainer.innerHTML = `
-        <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-        <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-        <button onclick="addQuote()">Add Quote</button>
+        <h3>Add a New Quote</h3>
+        <form id="addQuoteForm">
+            <input id="newQuoteText" type="text" placeholder="Enter a new quote" required />
+            <input id="newQuoteCategory" type="text" placeholder="Enter quote category" required />
+            <button type="submit">Add Quote</button>
+        </form>
         <button onclick="exportToJsonFile()">Export Quotes</button>
         <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
     `;
     document.body.appendChild(formContainer);
+
+    // Attach event listener to form submission
+    document.getElementById("addQuoteForm").addEventListener("submit", addQuote);
+}
+
+function populateCategories() {
+    const categoryFilter = document.getElementById("categoryFilter");
+    if (!categoryFilter) return;
+    
+    const categories = ["All Categories", ...new Set(quotes.map(q => q.category))];
+    categoryFilter.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join("\n");
+}
+
+function filterQuotes() {
+    const selectedCategory = document.getElementById("categoryFilter").value;
+    localStorage.setItem("selectedCategory", selectedCategory);
+    
+    if (selectedCategory === "All Categories") {
+        showRandomQuote();
+    } else {
+        const filteredQuotes = quotes.filter(q => q.category === selectedCategory);
+        showRandomQuote(filteredQuotes);
+    }
 }
 
 function exportToJsonFile() {
