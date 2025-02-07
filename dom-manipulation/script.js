@@ -11,13 +11,25 @@ function showRandomQuote(filteredQuotes = quotes) {
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
     const quote = filteredQuotes[randomIndex];
     
-    quoteDisplay.innerHTML = `<p><strong>Category:</strong> ${quote.category}</p><p>${quote.text}</p>`;
+    // Using textContent instead of innerHTML
+    const categoryElement = document.createElement('p');
+    categoryElement.textContent = `Category: ${quote.category}`;
+    const textElement = document.createElement('p');
+    textElement.textContent = quote.text;
+    
+    // Clear the previous content before adding new content
+    quoteDisplay.textContent = '';
+    quoteDisplay.appendChild(categoryElement);
+    quoteDisplay.appendChild(textElement);
+    
     sessionStorage.setItem("lastQuote", JSON.stringify(quote));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     populateCategories();
     showRandomQuote();
+    
+    // Event listeners for interaction
     document.getElementById("newQuote").addEventListener("click", () => showRandomQuote());
     document.getElementById("categoryFilter").addEventListener("change", filterQuotes);
     createAddQuoteForm();
@@ -44,16 +56,19 @@ function addQuote(event) {
 function createAddQuoteForm() {
     const formContainer = document.createElement("div");
     formContainer.innerHTML = `
-        <select id="categoryFilter">
-            <option value="all">All Categories</option>
-        </select>
-        <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-        <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-        <button onclick="addQuote()">Add Quote</button>
+        <h3>Add a New Quote</h3>
+        <form id="addQuoteForm">
+            <input id="newQuoteText" type="text" placeholder="Enter a new quote" required />
+            <input id="newQuoteCategory" type="text" placeholder="Enter quote category" required />
+            <button type="submit">Add Quote</button>
+        </form>
         <button onclick="exportToJsonFile()">Export Quotes</button>
         <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
     `;
     document.body.appendChild(formContainer);
+
+    // Attach event listener to form submission
+    document.getElementById("addQuoteForm").addEventListener("submit", addQuote);
 }
 
 function populateCategories() {
