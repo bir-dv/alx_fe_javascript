@@ -4,9 +4,9 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
     { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", category: "Success" }
 ];
 
-function showRandomQuote() {
+function showRandomQuote(filteredQuotes = quotes) {
     const quoteDisplay = document.getElementById("quoteDisplay");
-    if (!quoteDisplay) return;
+    if (!quoteDisplay || filteredQuotes.length === 0) return;
     
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
     const quote = filteredQuotes[randomIndex];
@@ -26,6 +26,7 @@ function showRandomQuote() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    populateCategories();
     showRandomQuote();
     
     // Event listeners for interaction
@@ -43,6 +44,7 @@ function addQuote(event) {
     if (text && category) {
         quotes.push({ text, category });
         localStorage.setItem("quotes", JSON.stringify(quotes));
+        populateCategories();
         showRandomQuote();
         
         // Clear input fields after adding quote
@@ -108,6 +110,7 @@ function importFromJsonFile(event) {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         localStorage.setItem("quotes", JSON.stringify(quotes));
+        populateCategories();
         alert("Quotes imported successfully!");
     };
     fileReader.readAsText(event.target.files[0]);
