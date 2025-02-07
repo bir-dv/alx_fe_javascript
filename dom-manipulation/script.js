@@ -7,7 +7,7 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
 ];
 
 // Simulate periodic fetching from the server
-setInterval(fetchQuotesFromServer, 5000); // Every 5 seconds simulate server fetching
+setInterval(syncQuotes, 5000); // Every 5 seconds simulate server fetching
 
 async function fetchQuotesFromServer() {
     try {
@@ -17,13 +17,14 @@ async function fetchQuotesFromServer() {
             text: quote.title,  // Using 'title' as quote text for simplicity
             category: quote.body // Using 'body' as category for simplicity
         }));
-        syncData(serverQuotes);
+        syncQuotes(serverQuotes);
     } catch (error) {
         console.error("Error fetching server data:", error);
     }
 }
 
-function syncData(serverQuotes) {
+// Sync the local and server data
+function syncQuotes(serverQuotes) {
     const localQuotes = [...quotes];
     const conflicts = [];
 
