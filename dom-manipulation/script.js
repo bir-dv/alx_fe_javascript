@@ -41,6 +41,7 @@ function syncQuotes(serverQuotes) {
     } else {
         // If no conflict, just sync
         updateLocalStorage(serverQuotes);
+        alert("Quotes synced with server!");
     }
 }
 
@@ -58,7 +59,7 @@ function resolveConflicts(conflicts, serverQuotes) {
     });
 
     updateLocalStorage(quotes);
-    alert("Conflicts resolved.");
+    alert("Conflicts resolved and quotes synced with server!");
 }
 
 function updateLocalStorage(updatedQuotes) {
