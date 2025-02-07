@@ -66,6 +66,24 @@ function updateLocalStorage(updatedQuotes) {
     showRandomQuote();
 }
 
+// Add functionality to send new quote data to the server (POST request)
+async function addQuoteToServer(newQuote) {
+    try {
+        const response = await fetch(apiUrl, {
+            method: "POST", // Use POST to send new data
+            headers: {
+                "Content-Type": "application/json", // Content type is JSON
+            },
+            body: JSON.stringify(newQuote) // Send the new quote in the request body
+        });
+
+        const result = await response.json();
+        console.log("Quote added to server:", result);
+    } catch (error) {
+        console.error("Error adding quote to server:", error);
+    }
+}
+
 function showRandomQuote(filteredQuotes = quotes) {
     const quoteDisplay = document.getElementById("quoteDisplay");
     if (!quoteDisplay || filteredQuotes.length === 0) return;
@@ -104,6 +122,10 @@ function addQuote(event) {
     if (text && category) {
         quotes.push({ text, category });
         localStorage.setItem("quotes", JSON.stringify(quotes));
+
+        // Send the new quote to the server
+        addQuoteToServer({ text, category });
+
         populateCategories();
         showRandomQuote();
         
