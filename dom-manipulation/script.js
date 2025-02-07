@@ -7,9 +7,9 @@ const quotes = JSON.parse(localStorage.getItem("quotes")) || [
 ];
 
 // Simulate periodic fetching from the server
-setInterval(fetchServerQuotes, 5000); // Every 5 seconds simulate server fetching
+setInterval(fetchQuotesFromServer, 5000); // Every 5 seconds simulate server fetching
 
-function fetchServerQuotes() {
+function fetchQuotesFromServer() {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
